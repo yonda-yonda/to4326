@@ -1,5 +1,5 @@
 from setuptools import setup, find_packages
-from _vendor.packaging.version import Version
+
 
 with open("README.md") as f:
     readme = f.read()
@@ -20,7 +20,7 @@ version = None
 with open("to4326/__init__.py", "r") as fp:
     for line in fp:
         if line.startswith("__version__"):
-            version = Version(line.split("=")[1].strip().strip("\"'"))
+            version = line.split("=")[1].strip().strip("\"'")
             break
 
 setup(
