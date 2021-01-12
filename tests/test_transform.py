@@ -20,7 +20,22 @@ def test_within():
     assert not transform._within(
         [0, 100], [[-10, -10], [10, -10], [10, 10], [-10, 10], [-10, -10]]
     )
-
+    assert not transform._within(
+        [-10, -10], [[-10, -10], [10, -10], [10, 10], [-10, 10], [-10, -10]]
+    )
+    assert transform._within(
+        [-10, -10],
+        [[-10, -10], [10, -10], [10, 10], [-10, 10], [-10, -10]],
+        include_border=True,
+    )
+    assert not transform._within(
+        [0, -10], [[-10, -10], [10, -10], [10, 10], [-10, 10], [-10, -10]]
+    )
+    assert transform._within(
+        [0, -10],
+        [[-10, -10], [10, -10], [10, 10], [-10, 10], [-10, -10]],
+        include_border=True,
+    )
     assert transform._within(
         [0, 0], [[170, -10], [-170, -10], [-170, 10], [170, 10], [170, -10]]
     )

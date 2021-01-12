@@ -62,7 +62,7 @@ def _is_ccw(linear_ring: Points):
     return area >= 0
 
 
-def _within(point: Point, linear_ring: Points, on_edge: bool = False):
+def _within(point: Point, linear_ring: Points, include_border: bool = False):
     """
     Winding Number Algorithm
     """
@@ -78,7 +78,7 @@ def _within(point: Point, linear_ring: Points, on_edge: bool = False):
         cv = x1 * x2 + y1 * y2
         sv = x1 * y2 - x2 * y1
         if sv == 0 and cv <= 0:
-            return on_edge
+            return include_border
 
         theta += math.atan2(sv, cv)
     return abs(theta) > 1
