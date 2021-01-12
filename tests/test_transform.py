@@ -1,50 +1,72 @@
 import pytest
 from to4326.validate import *
+from to4326.utils import *
 import to4326.transform as transform
 
 
 def test_is_ccw():
-    assert transform._is_ccw([[-10, -10], [10, -10], [10, 10], [-10, 10], [-10, -10]])
-    assert not transform._is_ccw(
-        [[-10, -10], [-10, 10], [10, 10], [10, -10], [-10, -10]]
-    )
-    assert not transform._is_ccw(
-        [[170, -10], [-170, -10], [-170, 10], [170, 10], [170, -10]]
-    )
+    assert is_ccw([[-10, -10], [10, -10], [10, 10], [-10, 10], [-10, -10]])
+    assert not is_ccw([[-10, -10], [-10, 10], [10, 10], [10, -10], [-10, -10]])
+    assert not is_ccw([[170, -10], [-170, -10], [-170, 10], [170, 10], [170, -10]])
 
 
 def test_within():
-    assert transform._within(
+    assert transform.within(
         [0, 0], [[-10, -10], [10, -10], [10, 10], [-10, 10], [-10, -10]]
     )
-    assert not transform._within(
+    assert not transform.within(
         [0, 100], [[-10, -10], [10, -10], [10, 10], [-10, 10], [-10, -10]]
     )
-    assert not transform._within(
+    assert not transform.within(
         [-10, -10], [[-10, -10], [10, -10], [10, 10], [-10, 10], [-10, -10]]
     )
-    assert transform._within(
+    assert transform.within(
         [-10, -10],
         [[-10, -10], [10, -10], [10, 10], [-10, 10], [-10, -10]],
         include_border=True,
     )
-    assert not transform._within(
+    assert not transform.within(
         [0, -10], [[-10, -10], [10, -10], [10, 10], [-10, 10], [-10, -10]]
     )
-    assert transform._within(
+    assert transform.within(
         [0, -10],
         [[-10, -10], [10, -10], [10, 10], [-10, 10], [-10, -10]],
         include_border=True,
     )
-    assert transform._within(
+    assert transform.within(
         [0, 0], [[170, -10], [-170, -10], [-170, 10], [170, 10], [170, -10]]
     )
-    assert not transform._within(
+    assert not transform.within(
         [180, 0], [[170, -10], [-170, -10], [-170, 10], [170, 10], [170, -10]]
     )
-    assert not transform._within(
+    assert not transform.within(
         [-180, 0], [[170, -10], [-170, -10], [-170, 10], [170, 10], [170, -10]]
     )
+
+
+def test_intersection():
+    assert intersection([0, 0], [10, 10], [1, 8], [9, 2])
+    assert not intersection([0, 0], [10, 10], [1, 8], [-9, 2])
+    assert intersection([0, 0], [10, 10], [1, 8], [5, 5])
+    assert not intersection([0, 0], [10, 10], [1, 8], [4, 5])
+    assert intersection([0, 0], [10, 10], [2, 2], [5, 5])
+    assert intersection([0, 0], [10, 10], [-2, -2], [5, 5])
+
+
+def test_selfintersection():
+    assert not transform.selfintersection(
+        [[-10, -10], [10, -10], [10, 10], [-10, 10], [-10, -10]]
+    )
+    assert not transform.selfintersection(
+        [[-10, -10], [-10, 10], [10, 10], [10, -10], [-10, -10]]
+    )
+    assert not transform.selfintersection(
+        [[-10, -10], [10, -10], [10, 10], [0, 10], [-10, 10], [-10, -10]]
+    )
+    assert transform.selfintersection(
+        [[-10, -10], [10, -10], [10, 10], [0, -10], [-10, 10], [-10, -10]]
+    )
+    assert transform.selfintersection([[-10, -10], [10, -10], [20, -10], [-10, -10]])
 
 
 def test_transform():

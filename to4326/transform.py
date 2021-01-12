@@ -1,13 +1,12 @@
-import math
 from functools import reduce
 from typing import Sequence
 from pyproj import CRS, Transformer
 from .types import *
+from .constants import *
+from .utils import *
 from .calc import *
 from .lonlat import *
 from . import validate
-
-EPSG4326 = CRS.from_epsg(4326)
 
 
 class IncludingPole(Exception):
@@ -35,55 +34,6 @@ class FalidCuttingAntimeridian(Exception):
         return "falid cutting antimeridian."
 
 
-def _is_ccw(linear_ring: Points):
-    area = 0.0
-    if len(linear_ring) > 2:
-        if (
-            linear_ring[0][0] == linear_ring[-1][0]
-            and linear_ring[0][1] == linear_ring[-1][1]
-        ):
-            length = len(linear_ring) - 1
-        else:
-            length = len(linear_ring)
-
-        for i in range(length - 1):
-            area = (
-                area
-                + linear_ring[i][0] * linear_ring[i + 1][1]
-                - linear_ring[i][1] * linear_ring[i + 1][0]
-            )
-
-        area = (
-            area
-            + linear_ring[length - 1][0] * linear_ring[0][1]
-            - linear_ring[length - 1][1] * linear_ring[0][0]
-        )
-
-    return area >= 0
-
-
-def _within(point: Point, linear_ring: Points, include_border: bool = False):
-    """
-    Winding Number Algorithm
-    """
-    theta: float = 0
-    for i in range(len(linear_ring)):
-        x1, y1 = linear_ring[i - 1]
-        x2, y2 = linear_ring[i]
-        x1 -= point[0]
-        y1 -= point[1]
-        x2 -= point[0]
-        y2 -= point[1]
-
-        cv = x1 * x2 + y1 * y2
-        sv = x1 * y2 - x2 * y1
-        if sv == 0 and cv <= 0:
-            return include_border
-
-        theta += math.atan2(sv, cv)
-    return abs(theta) > 1
-
-
 def _transform(points: Points, src_crs: CRS, dst_crs: CRS):
     if src_crs == dst_crs:
         return points
@@ -100,10 +50,10 @@ def transform_ring(linear_ring: Points, src_crs: CRS, partition: int = 0):
     length = len(linear_ring) - 1
 
     north_pole = _transform([[0, 90]], EPSG4326, src_crs)[0]
-    if _within(north_pole, linear_ring):
+    if within(north_pole, linear_ring):
         raise IncludingPole
     south_pole = _transform([[0, -90]], EPSG4326, src_crs)[0]
-    if _within(south_pole, linear_ring):
+    if within(south_pole, linear_ring):
         raise IncludingPole
 
     interpolated_linear_ring = []
@@ -146,7 +96,7 @@ def transform_bbox(
     )
 
     ys = [p[1] for p in points]
-    if _is_ccw(points):
+    if is_ccw(points):
         xs = [p[0] for p in points]
         if len(src_bbox) == 6:
             return [min(xs), min(ys), src_bbox[2], max(xs), max(ys), src_bbox[5]]
@@ -171,12 +121,12 @@ def transform_bbox(
 
 
 def geojson_from_linear_ring(linear_ring: Points, src_crs: CRS, partition: int = 9):
-    if not _is_ccw(linear_ring):
+    if not is_ccw(linear_ring):
         raise NotAllowedCwLinearRing
     points = transform_ring(linear_ring, src_crs, partition=partition)
     ys = [p[1] for p in points]
 
-    if _is_ccw(points):
+    if is_ccw(points):
         xs = [p[0] for p in points]
         return {
             "type": "Feature",
