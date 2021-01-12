@@ -1,14 +1,5 @@
 from .types import *
-
-
-class InvalidPoint(Exception):
-    def __str__(self):
-        return "point's dimension must be 2."
-
-
-class InvalidLinearRing(Exception):
-    def __str__(self):
-        return "invalid linear ring."
+from .exceptions import *
 
 
 def points(points: Points):

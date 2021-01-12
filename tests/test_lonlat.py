@@ -1,3 +1,5 @@
+import pytest
+from to4326.exceptions import *
 import to4326.lonlat as lonlat
 
 
@@ -106,3 +108,31 @@ def test_cut_ring_at_antimeridian():
     ) == lonlat.Ring(
         within=[[[-10, 30], [15, 30], [15, 40], [-10, 40], [-10, 30]]], overflow=[]
     )
+    assert lonlat.cut_ring_at_antimeridian(
+        [[-160, 40], [175, 40], [-175, 30], [175, 30], [-160, 30], [-160, 40]],
+        allow_selfintersection=True,
+    ) == lonlat.Ring(
+        within=[
+            [[180, 40.0], [175, 40], [180, 35.0], [180, 40.0]],
+            [[180, 30.0], [175, 30], [180, 30.0], [180, 30.0]],
+        ],
+        overflow=[
+            [
+                [-180, 35.0],
+                [-175, 30],
+                [-180, 30.0],
+                [-180, 30.0],
+                [-160, 30],
+                [-160, 40],
+                [-180, 40.0],
+                [-180, 35.0],
+            ]
+        ],
+    )
+
+
+def test_invalid_error():
+    with pytest.raises(InvalidSelfintersection):
+        lonlat.cut_ring_at_antimeridian(
+            [[-160, 40], [175, 40], [-175, 30], [175, 30], [-160, 30], [-160, 40]]
+        )

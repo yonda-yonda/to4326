@@ -2,36 +2,12 @@ from functools import reduce
 from typing import Sequence
 from pyproj import CRS, Transformer
 from .types import *
+from .exceptions import *
 from .constants import *
 from .utils import *
 from .calc import *
 from .lonlat import *
 from . import validate
-
-
-class IncludingPole(Exception):
-    def __str__(self):
-        return "not support points around the poles."
-
-
-class InvalidBounds(Exception):
-    def __str__(self):
-        return "invalid bounds."
-
-
-class NotAllowedWarpBounds(Exception):
-    def __str__(self):
-        return "not support warpping bounds."
-
-
-class NotAllowedCwLinearRing(Exception):
-    def __str__(self):
-        return "not support cw linear ring."
-
-
-class FalidCuttingAntimeridian(Exception):
-    def __str__(self):
-        return "falid cutting antimeridian."
 
 
 def _transform(points: Points, src_crs: CRS, dst_crs: CRS):

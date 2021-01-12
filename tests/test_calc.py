@@ -1,6 +1,6 @@
 import pytest
+from to4326.exceptions import *
 from to4326.calc import *
-from to4326.validate import *
 
 
 def test_linear_x():

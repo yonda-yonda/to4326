@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from .types import *
 from .calc import *
+from .utils import *
+from .exceptions import *
 from . import validate
 
 
@@ -53,7 +55,9 @@ class Ring:
     overflow: list
 
 
-def cut_ring_at_antimeridian(linear_ring: Points, overflowing: bool = False):
+def cut_ring_at_antimeridian(
+    linear_ring: Points, overflowing: bool = False, allow_selfintersection: bool = False
+):
     """
     When overflowing is True, points are right side of 180 degrees.
     The overflowing flag is used when recursive.
@@ -119,13 +123,30 @@ def cut_ring_at_antimeridian(linear_ring: Points, overflowing: bool = False):
         return rtn
 
     cut1 = _cutting(start, end)
-    result1 = cut_ring_at_antimeridian(cut1["linear_ring"], cut1["overflowing"])
+    result1 = cut_ring_at_antimeridian(
+        cut1["linear_ring"],
+        cut1["overflowing"],
+        allow_selfintersection=allow_selfintersection,
+    )
     ret.within.extend(result1.within)
     ret.overflow.extend(result1.overflow)
 
     cut2 = _cutting(end, start)
-    result2 = cut_ring_at_antimeridian(cut2["linear_ring"], cut2["overflowing"])
+    result2 = cut_ring_at_antimeridian(
+        cut2["linear_ring"],
+        cut2["overflowing"],
+        allow_selfintersection=allow_selfintersection,
+    )
     ret.within.extend(result2.within)
     ret.overflow.extend(result2.overflow)
+
+    if not allow_selfintersection:
+        for ring in ret.within:
+            if selfintersection(ring):
+                raise InvalidSelfintersection
+
+        for ring in ret.overflow:
+            if selfintersection(ring):
+                raise InvalidSelfintersection
 
     return ret
