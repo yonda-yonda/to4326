@@ -56,6 +56,10 @@ def within(point: Point, linear_ring: Points, include_border: bool = False):
 
 
 def intersection(p1: Point, p2: Point, p3: Point, p4: Point):
+    """
+    When p1 -> p2, p3 -> p4 are crossing or points more than 3 are on a line,
+    return True
+    """
     validate.points([p1, p2, p3, p4])
     if p1[0] >= p2[0]:
         if (p1[0] < p3[0] and p1[0] < p4[0]) or (p2[0] > p3[0] and p2[0] > p4[0]):
