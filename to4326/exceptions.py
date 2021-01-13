@@ -4,35 +4,28 @@ class InvalidPoint(Exception):
 
 
 class InvalidLinearRing(Exception):
-    def __str__(self):
-        return "invalid linear ring."
+    """invalid linear ring."""
 
 
 class IncludingPole(Exception):
-    def __str__(self):
-        return "not support points around the poles."
+    """not support points around the poles."""
 
 
 class InvalidBounds(Exception):
-    def __str__(self):
-        return "invalid bounds."
+    """invalid bounds."""
 
 
 class NotAllowedWarpBounds(Exception):
-    def __str__(self):
-        return "not support warpping bounds."
+    """not support warpping bounds."""
 
 
 class NotAllowedCwLinearRing(Exception):
-    def __str__(self):
-        return "not support cw linear ring."
+    """not support cw linear ring."""
 
 
 class InvalidSelfintersection(Exception):
-    def __str__(self):
-        return "invalid Selfintersection."
+    """invalid Selfintersection."""
 
 
 class FalidCuttingAntimeridian(Exception):
-    def __str__(self):
-        return "falid cutting antimeridian."
+    """falid cutting antimeridian."""
