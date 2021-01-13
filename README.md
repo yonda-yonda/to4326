@@ -1,5 +1,6 @@
 # to4326
 to4326 convert bounds of satellite data such as GeoTIFF to EPSG:4326.
+Depends: pyproj
 
 ## Example
 ### simple
