@@ -27,6 +27,7 @@ transform.geojson_from_corner_coordinates(upper_left, lower_left, upper_right, l
 		88.07596179098907,
 		22.719775713801845
 	 ],
+	"properties": {},
 	"geometry":{
 		"type":"Polygon",
 		"coordinates":[
@@ -67,6 +68,7 @@ transform.geojson_from_linear_ring(
 		88.07596179098907,
 		22.719775713801845
 	],
+	"properties": {},
 	"geometry":{
 	"type":"MultiPolygon",
 	"coordinates": [
@@ -108,8 +110,5 @@ lower_right = dataset.transform * (dataset.width, dataset.height)
 transform.geojson_from_corner_coordinates(upper_left, lower_left, upper_right, lower_right, src_crs)
 ```
 
-## Methods
-Major methods of `to4326.transform`
-* `transform_bbox`
-* `geojson_from_linear_ring`
-* `geojson_from_corner_coordinates`
+## Docs
+[Documets](./docs/README.md)
