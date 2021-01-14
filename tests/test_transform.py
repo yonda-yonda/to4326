@@ -110,6 +110,7 @@ def test_geojson_from_linear_ring():
     ) == {
         "type": "Feature",
         "bbox": [-10, -10, 10, 10],
+        "properties": {},
         "geometry": {
             "type": "Polygon",
             "coordinates": [[[-10, -10], [10, -10], [10, 10], [-10, 10], [-10, -10]]],
@@ -120,6 +121,7 @@ def test_geojson_from_linear_ring():
     ) == {
         "type": "Feature",
         "bbox": [-10.0, -10, 10, 10],
+        "properties": {},
         "geometry": {
             "type": "Polygon",
             "coordinates": [
@@ -155,6 +157,7 @@ def test_geojson_from_linear_ring():
             -5.270622665103448,
             86.88878705473334,
         ],
+        "properties": {},
         "geometry": {
             "type": "Polygon",
             "coordinates": [
@@ -223,6 +226,7 @@ def test_geojson_from_linear_ring():
             -177.57860702499983,
             65.34932256544839,
         ],
+        "properties": {},
         "geometry": {
             "type": "MultiPolygon",
             "coordinates": [
@@ -268,6 +272,7 @@ def test_geojson_from_corner_coordinates():
             -5.270622665103448,
             86.88878705473334,
         ],
+        "properties": {},
         "geometry": {
             "type": "Polygon",
             "coordinates": [
@@ -333,6 +338,7 @@ def test_geojson_from_corner_coordinates():
             -177.57860702499983,
             65.34932256544839,
         ],
+        "properties": {},
         "geometry": {
             "type": "MultiPolygon",
             "coordinates": [

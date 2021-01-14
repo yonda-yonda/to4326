@@ -107,6 +107,7 @@ def geojson_from_linear_ring(linear_ring: Points, src_crs: CRS, partition: int =
         return {
             "type": "Feature",
             "bbox": [min(xs), min(ys), max(xs), max(ys)],
+            "properties": {},
             "geometry": {"type": "Polygon", "coordinates": [points]},
         }
 
@@ -120,6 +121,7 @@ def geojson_from_linear_ring(linear_ring: Points, src_crs: CRS, partition: int =
         return {
             "type": "Feature",
             "bbox": [min(xs1), min(ys), max(xs2), max(ys)],
+            "properties": {},
             "geometry": {"type": "MultiPolygon", "coordinates": coordinates},
         }
 
