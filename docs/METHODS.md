@@ -2,6 +2,7 @@
 ## transform
 
 ### geojson_from_corner_coordinates
+
 #### props
 | Name | Type | Description |
 | ---------- | ---------- | ----------- |
@@ -16,6 +17,7 @@
 geojson.
 
 ### geojson_from_linear_ring
+
 #### props
 | Name | Type | Description |
 | ---------- | ---------- | ----------- |
