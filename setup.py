@@ -1,11 +1,10 @@
+import os
 from setuptools import setup, find_packages
 
 
-with open("README.md") as f:
-    readme = f.read()
-
-with open("LICENSE") as f:
-    license = f.read()
+def load_readme():
+    with open("README.md", encoding="utf-8") as f:
+        return f.read()
 
 
 def read_requirements():
@@ -26,19 +25,17 @@ with open("to4326/__init__.py", "r") as fp:
 setup(
     name="to4326",
     version=str(version),
-    description="transform geometry points to EPSG:4326",
-    long_description=readme,
-    packages=[
-        "to4326",
-        "to4326.transform",
-        "to4326.calc",
-        "to4326.lonlat",
-        "to4326.types",
-        "to4326.validate",
-    ],
+    long_description_content_type="text/markdown",
+    long_description=load_readme(),
+    packages=find_packages(),
     author="yonda",
     author_email="yonda.fountain@gmail.com",
     url="https://github.com/yonda-yonda/to4326",
-    license=license,
     install_requires=read_requirements(),
+    classifiers=[
+        "License :: OSI Approved :: MIT License",
+        "Programming Language :: Python :: 3",
+        "Topic :: Scientific/Engineering :: GIS",
+    ],
+    python_requires=">=3.7",
 )
