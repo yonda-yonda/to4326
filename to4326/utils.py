@@ -38,14 +38,15 @@ def within(point: Point, linear_ring: Points, include_border: bool = False):
     """
     validate.points([point])
     validate.linear_ring(linear_ring)
+    [x, y] = point
     theta: float = 0
     for i in range(len(linear_ring)):
         x1, y1 = linear_ring[i - 1]
         x2, y2 = linear_ring[i]
-        x1 -= point[0]
-        y1 -= point[1]
-        x2 -= point[0]
-        y2 -= point[1]
+        x1 -= x
+        y1 -= y
+        x2 -= x
+        y2 -= y
 
         cv = x1 * x2 + y1 * y2
         sv = x1 * y2 - x2 * y1

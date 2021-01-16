@@ -1,3 +1,4 @@
+import sys
 from functools import reduce
 from typing import Sequence
 from pyproj import CRS, Transformer
@@ -18,33 +19,137 @@ def _transform(points: Points, src_crs: CRS, dst_crs: CRS):
     return [list(transformer.transform(*p)) for p in points]
 
 
+def _transform_enclosing_pole_ring(
+    linear_ring: Points, src_crs: CRS, partition: int, north: bool = True
+):
+    length = len(linear_ring) - 1
+    temp_CRS = (
+        ARCTIC_POLAR_STEROGRAPHIC_CRS if north else ANTARCTIC_POLAR_STEROGRAPHIC_CRS
+    )
+
+    end_y = sys.maxsize if north else -1 * sys.maxsize
+    pole_lat = 90 if north else -90
+    polar_sterographic_linear_ring = _transform(linear_ring, src_crs, temp_CRS)
+
+    crossing_ys = []
+    for i in range(length):
+        if intersection(
+            polar_sterographic_linear_ring[i],
+            polar_sterographic_linear_ring[i + 1],
+            [0, 0],
+            [0, end_y],
+        ):
+            crossing_ys.append(
+                {
+                    "from": i,
+                    "to": i + 1,
+                    "y": linear_y(
+                        polar_sterographic_linear_ring[i],
+                        polar_sterographic_linear_ring[i + 1],
+                        0,
+                    ),
+                }
+            )
+    if len(crossing_ys) == 0:
+        raise InvalidLinearRingEnclosingPole
+    sorted(crossing_ys, key=lambda p: p["y"])
+
+    crossing_y = crossing_ys[0] if north else crossing_ys[-1]
+
+    ret = []
+    for i in range(length):
+        if i == crossing_y["from"]:
+            transformed = _transform(
+                linear_interpolate(
+                    polar_sterographic_linear_ring[crossing_y["from"]],
+                    [0, crossing_y["y"]],
+                    partition,
+                ),
+                temp_CRS,
+                EPSG4326_CRS,
+            )
+
+            ret.extend(transformed[:-1])
+            if transformed[0][0] >= 0:
+                ret.extend(
+                    [
+                        [180, transformed[-1][1]],
+                        [180, pole_lat],
+                        [-180, pole_lat],
+                        [-180, transformed[-1][1]],
+                    ]
+                )
+            else:
+                ret.extend(
+                    [
+                        [-180, transformed[-1][1]],
+                        [-180, pole_lat],
+                        [180, pole_lat],
+                        [180, transformed[-1][1]],
+                    ]
+                )
+            ret.extend(
+                _transform(
+                    linear_interpolate(
+                        [0, crossing_y["y"]],
+                        polar_sterographic_linear_ring[crossing_y["to"]],
+                        partition,
+                    ),
+                    temp_CRS,
+                    EPSG4326_CRS,
+                )[1:-1]
+            )
+        else:
+            ret.extend(
+                _transform(
+                    linear_interpolate(
+                        polar_sterographic_linear_ring[i],
+                        polar_sterographic_linear_ring[i + 1],
+                        partition,
+                    ),
+                    temp_CRS,
+                    EPSG4326_CRS,
+                )[:-1]
+            )
+    ret.append(ret[0])
+
+    return ret
+
+
 def transform_ring(linear_ring: Points, src_crs: CRS, partition: int = 0):
     """
-    not support linear rings of including the pole.
+    not support linear rings of including both poles.
     """
     validate.linear_ring(linear_ring)
     length = len(linear_ring) - 1
 
-    north_pole = _transform([[0, 90]], EPSG4326, src_crs)[0]
-    if within(north_pole, linear_ring):
-        raise IncludingPole
-    south_pole = _transform([[0, -90]], EPSG4326, src_crs)[0]
-    if within(south_pole, linear_ring):
-        raise IncludingPole
+    north_pole = _transform([[0, 90]], EPSG4326_CRS, src_crs)[0]
+    enclosing_north_pole = within(north_pole, linear_ring)
+    south_pole = _transform([[0, -90]], EPSG4326_CRS, src_crs)[0]
+    enclosing_south_pole = within(south_pole, linear_ring)
+    if enclosing_north_pole and enclosing_south_pole:
+        raise EnclosingBothPoles
+
+    if enclosing_north_pole:
+        return _transform_enclosing_pole_ring(
+            linear_ring, src_crs, partition=partition, north=True
+        )
+    if enclosing_south_pole:
+        return _transform_enclosing_pole_ring(
+            linear_ring, src_crs, partition=partition, north=False
+        )
 
     interpolated_linear_ring = []
-    for i in range(length - 1):
+    for i in range(length):
         interpolated_linear_ring.extend(
             linear_interpolate(linear_ring[i], linear_ring[i + 1], partition)[:-1]
         )
-    interpolated_linear_ring.extend(
-        linear_interpolate(linear_ring[length - 1], linear_ring[0], partition)
-    )
+    interpolated_linear_ring.append(interpolated_linear_ring[0])
 
-    if src_crs == EPSG4326:
+    if src_crs == EPSG4326_CRS:
         return interpolated_linear_ring
 
-    return _transform(interpolated_linear_ring, src_crs, EPSG4326)
+    return _transform(interpolated_linear_ring, src_crs, EPSG4326_CRS)
 
 
 def transform_bbox(

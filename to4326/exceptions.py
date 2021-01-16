@@ -7,8 +7,12 @@ class InvalidLinearRing(Exception):
     """invalid linear ring."""
 
 
-class IncludingPole(Exception):
-    """not support points around the poles."""
+class EnclosingBothPoles(Exception):
+    """not support linear ring enclosing north and south poles."""
+
+
+class InvalidLinearRingEnclosingPole(Exception):
+    """invalid linear ring enclosing the pole."""
 
 
 class InvalidBounds(Exception):
@@ -24,7 +28,7 @@ class NotAllowedCwLinearRing(Exception):
 
 
 class InvalidSelfintersection(Exception):
-    """invalid Selfintersection."""
+    """invalid selfintersection."""
 
 
 class FalidCuttingAntimeridian(Exception):
