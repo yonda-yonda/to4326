@@ -84,8 +84,7 @@ def cut_ring_at_antimeridian(
             if not overflowing
             else Ring(within=[], overflow=[linear_ring])
         )
-
-    sorted(crossing_lats, key=lambda p: p["lat"])
+    crossing_lats = sorted(crossing_lats, key=lambda p: p["lat"])
     start = crossing_lats[-1]
     end = crossing_lats[-2]
 
