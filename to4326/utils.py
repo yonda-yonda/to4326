@@ -7,27 +7,21 @@ from . import validate
 def is_ccw(linear_ring: Points):
     validate.linear_ring(linear_ring)
     area = 0.0
-    if len(linear_ring) > 2:
-        if (
-            linear_ring[0][0] == linear_ring[-1][0]
-            and linear_ring[0][1] == linear_ring[-1][1]
-        ):
-            length = len(linear_ring) - 1
-        else:
-            length = len(linear_ring)
 
-        for i in range(length - 1):
-            area = (
-                area
-                + linear_ring[i][0] * linear_ring[i + 1][1]
-                - linear_ring[i][1] * linear_ring[i + 1][0]
-            )
+    length = len(linear_ring) - 1
 
+    for i in range(length - 1):
         area = (
             area
-            + linear_ring[length - 1][0] * linear_ring[0][1]
-            - linear_ring[length - 1][1] * linear_ring[0][0]
+            + linear_ring[i][0] * linear_ring[i + 1][1]
+            - linear_ring[i][1] * linear_ring[i + 1][0]
         )
+
+    area = (
+        area
+        + linear_ring[length - 1][0] * linear_ring[0][1]
+        - linear_ring[length - 1][1] * linear_ring[0][0]
+    )
 
     return area >= 0
 
