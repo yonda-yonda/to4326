@@ -50,11 +50,11 @@ def _transform_enclosing_pole_ring(
                     ),
                 }
             )
-    if len(crossing_ys) == 0:
+    if not len(crossing_ys) == 1:
+        # not support linear ring that is not enclosing the pole and straddling the antimeridian many times.
         raise InvalidLinearRingEnclosingPole
-    sorted(crossing_ys, key=lambda p: p["y"])
-
-    crossing_y = crossing_ys[0] if north else crossing_ys[-1]
+    crossing_ys = sorted(crossing_ys, key=lambda p: p["y"])
+    crossing_y = crossing_ys[-1] if north else crossing_ys[0]
 
     ret = []
     for i in range(length):
