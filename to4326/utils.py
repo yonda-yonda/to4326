@@ -97,14 +97,15 @@ def selfintersection(linear_ring: Points):
             < EPSILON
         )
 
-    lines = [[linear_ring[i], linear_ring[i + 1]] for i in range(len(linear_ring) - 2)]
+    lines = [[linear_ring[i], linear_ring[i + 1]] for i in range(len(linear_ring) - 1)]
 
     def check(lines, start=0):
         if start + 2 >= len(lines):
             return False
 
         l1 = lines[start]
-        for i in range(start + 2, len(lines)):
+        endIndex = len(lines) - 1 if start == 0 else len(lines)
+        for i in range(start + 2, endIndex):
             l2 = lines[i]
             if intersection(*l1, *l2):
                 return True
